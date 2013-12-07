@@ -27,7 +27,7 @@ It can generate random passwords or set user-supplied passwords.
 
 
 %build
-%qmake5
+CFLAGS="$CFLAGGS -DPASSWORDMANAGER_DEBUG=1" CXXFLAGS="$CXXFLAGS -DPASSWORDMANAGER_DEBUG=1"  %qmake5
 make
 
 %install

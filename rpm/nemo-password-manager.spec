@@ -59,5 +59,6 @@ fi
 %defattr(-,root,root,-)
 %doc README
 %{_bindir}/%{name}
+/lib/systemd/system/*.service
 %{_datadir}/dbus-1/system-services/%{dbus_service_name}.service
 %{_sysconfdir}/dbus-1/system.d/%{dbus_service_name}.conf

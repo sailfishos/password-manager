@@ -8,7 +8,7 @@ Summary: D-Bus Service for changing and generating passwords
 
 Group: System Environment/Daemon
 License: GPLv2
-URL: https://github.com/nemomobile/password-manager
+URL: https://git.merproject.org/mer-core/password-manager
 Source: %{name}-%{version}.tar.gz
 
 BuildRequires: pkgconfig(Qt5Core)
@@ -57,7 +57,7 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc README
+%license COPYING
 %{_bindir}/%{name}
 /lib/systemd/system/*.service
 %{_datadir}/dbus-1/system-services/%{dbus_service_name}.service

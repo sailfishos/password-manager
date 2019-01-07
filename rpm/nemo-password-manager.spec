@@ -16,7 +16,10 @@ BuildRequires: pkgconfig(Qt5DBus)
 BuildRequires: pkgconfig(libshadowutils)
 BuildRequires: pam-devel
 Requires: dbus
-Requires: procps
+Requires(post):  dbus
+Requires(preun): dbus
+Requires(post):  procps
+Requires(preun): procps
 
 %description
 Password Manager manages user account passwords for developer mode.

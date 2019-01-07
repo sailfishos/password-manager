@@ -7,7 +7,7 @@ Summary: D-Bus Service for changing and generating passwords
 %define dbus_service_path /org/nemo/passwordmanager
 
 Group: System Environment/Daemon
-License: GPLv2
+License: GPLv2+
 URL: https://git.merproject.org/mer-core/password-manager
 Source: %{name}-%{version}.tar.gz
 

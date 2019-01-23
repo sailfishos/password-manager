@@ -7,8 +7,8 @@ Summary: D-Bus Service for changing and generating passwords
 %define dbus_service_path /org/nemo/passwordmanager
 
 Group: System Environment/Daemon
-License: GPLv2
-URL: https://github.com/nemomobile/password-manager
+License: GPLv2+
+URL: https://git.merproject.org/mer-core/password-manager
 Source: %{name}-%{version}.tar.gz
 
 BuildRequires: pkgconfig(Qt5Core)
@@ -16,7 +16,10 @@ BuildRequires: pkgconfig(Qt5DBus)
 BuildRequires: pkgconfig(libshadowutils)
 BuildRequires: pam-devel
 Requires: dbus
-Requires: procps
+Requires(post):  dbus
+Requires(preun): dbus
+Requires(post):  procps
+Requires(preun): procps
 
 %description
 Password Manager manages user account passwords for developer mode.
@@ -57,7 +60,8 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc README
+%license COPYING
 %{_bindir}/%{name}
+/lib/systemd/system/*.service
 %{_datadir}/dbus-1/system-services/%{dbus_service_name}.service
 %{_sysconfdir}/dbus-1/system.d/%{dbus_service_name}.conf

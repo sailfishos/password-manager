@@ -37,6 +37,13 @@ make
 rm -rf %{buildroot}
 %qmake5_install
 
+# Move under /usr
+if [ -e %{buildroot}/lib ]; then
+  mkdir -p %{buildroot}%{_libdir}/systemd/system/
+  mv %{buildroot}/lib/systemd/system/* %{buildroot}%{_libdir}/systemd/system/
+  rm -rf %{buildroot}/lib
+fi
+
 %clean
 rm -rf %{buildroot}
 
@@ -62,6 +69,6 @@ fi
 %defattr(-,root,root,-)
 %license COPYING
 %{_bindir}/%{name}
-/lib/systemd/system/*.service
+/usr/lib/systemd/system/*.service
 %{_datadir}/dbus-1/system-services/%{dbus_service_name}.service
 %{_sysconfdir}/dbus-1/system.d/%{dbus_service_name}.conf

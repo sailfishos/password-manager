@@ -1,7 +1,7 @@
 /**
  * Nemo Password Manager: D-Bus Service for changing and generating passwords
- * Copyright (C) 2013 Jolla Ltd.
- * Contact: Thomas Perl <thomas.perl@jollamobile.com>
+ * Copyright (c) 2013 - 2019 Jolla Ltd.
+ * Copyright (c) 2019 Open Mobile Platform LLC.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,8 @@ class PasswordManagerStore {
         QString get();
         bool set(const QString &password);
 
-        bool isLoginEnabled();
-        void disableLogin();
+        bool isPasswordEnabled();
+        void disablePassword();
 
     private:
         bool load();

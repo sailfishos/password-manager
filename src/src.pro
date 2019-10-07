@@ -29,6 +29,9 @@ HEADERS += passwordmanager_store.h
 SOURCES += passwordmanager_pwgen.cpp
 HEADERS += passwordmanager_pwgen.h
 
+SOURCES += passwordmanager_sshd.cpp
+HEADERS += passwordmanager_sshd.h
+
 
 # Generated at qmake time by ../password-manager.pro
 SOURCES += passwordmanageradaptor.cpp

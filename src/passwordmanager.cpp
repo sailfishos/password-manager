@@ -1,7 +1,7 @@
 /**
  * Nemo Password Manager: D-Bus Service for changing and generating passwords
- * Copyright (C) 2013 Jolla Ltd.
- * Contact: Thomas Perl <thomas.perl@jollamobile.com>
+ * Copyright (c) 2013 - 2019 Jolla Ltd.
+ * Copyright (c) 2019 Open Mobile Platform LLC.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@ PasswordManager::PasswordManager(QObject *parent)
     : QObject(parent)
     , QDBusContext()
     , store()
+    , sshdManager(this)
     , autoclose()
 {
     // Inactivity timeout after which the service quits to save resources
@@ -58,6 +59,9 @@ PasswordManager::PasswordManager(QObject *parent)
         qFatal("Cannot register D-Bus service at %s", SERVICE_NAME);
     }
 
+    connect(&sshdManager, &PasswordManagerSshd::remoteLoginEnabledChanged,
+            this, &PasswordManager::handleRemoteLoginEnabledChanged);
+
     new PasswordManagerAdaptor(this);
 
     // Every time a client action is carried out, we call autoclose.start() to
@@ -74,7 +78,7 @@ PasswordManager::generatePassword()
 {
     if (!isPrivileged()) return;
 
-    bool loginEnabled = isLoginEnabled();
+    bool passwordEnabled = isLoginEnabled();
     QString password = PasswordManagerPwGen::generate();
 
     QString message;
@@ -83,7 +87,7 @@ PasswordManager::generatePassword()
             emit error("Could not save password");
         }
         emit passwordChanged();
-        if (!loginEnabled) {
+        if (!passwordEnabled) {
             emit loginEnabledChanged(true);
         }
     } else {
@@ -107,19 +111,19 @@ PasswordManager::setPassword(const QString &password)
 {
     if (!isPrivileged()) return;
 
-    bool loginEnabled = isLoginEnabled();
+    bool passwordEnabled = isLoginEnabled();
 
     QString message;
     if (PasswordManagerPAM::set(password, &message)) {
         if (password == "") {
-            store.disableLogin();
+            store.disablePassword();
         } else {
             store.set("");
         }
         emit passwordChanged();
-        if (!loginEnabled && password != "") {
+        if (!passwordEnabled && password != "") {
             emit loginEnabledChanged(true);
-        } else if (loginEnabled && password == "") {
+        } else if (passwordEnabled && password == "") {
             emit loginEnabledChanged(false);
         }
     } else {
@@ -132,9 +136,42 @@ PasswordManager::setPassword(const QString &password)
 bool
 PasswordManager::isLoginEnabled()
 {
-    // No privileges needed for login enabled check
+    // No privileges needed for password enabled check
 
-    return store.isLoginEnabled();
+    return store.isPasswordEnabled();
+}
+
+void
+PasswordManager::setRemoteLoginEnabled(bool enabled)
+{
+    if (!isPrivileged()) return;
+
+    RemoteLoginState state = sshdManager.isRemoteLoginEnabled();
+    if (state != Unknown && (state == Enabled) == enabled)
+        return;
+
+    if (enabled)
+        sshdManager.enableRemoteLogin();
+    else
+        sshdManager.disableRemoteLogin();
+
+    autoclose.start();
+}
+
+bool
+PasswordManager::isRemoteLoginEnabled()
+{
+    // No privileges needed for remote login enabled check
+
+    autoclose.start();
+    RemoteLoginState state = sshdManager.isRemoteLoginEnabled();
+    if (state == Unknown) {
+        // Still querying for status, delay the reply
+        setDelayedReply(true);
+        replyQueue.enqueue(message().createReply());
+        return false;
+    }
+    return state == Enabled;
 }
 
 void
@@ -143,6 +180,17 @@ PasswordManager::quit()
     if (!isPrivileged()) return;
 
     QCoreApplication::quit();
+}
+
+void
+PasswordManager::handleRemoteLoginEnabledChanged(bool enabled)
+{
+    while (!replyQueue.isEmpty()) {
+        QDBusMessage reply = replyQueue.dequeue();
+        reply << enabled;
+        QDBusConnection::systemBus().send(reply);
+    }
+    emit remoteLoginEnabledChanged(enabled);
 }
 
 bool

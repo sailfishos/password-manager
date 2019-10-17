@@ -1,5 +1,5 @@
 Name: nemo-password-manager
-Version: 0.0.8
+Version: 0.1.0
 Release: 1
 Summary: D-Bus Service for changing and generating passwords
 
@@ -31,7 +31,7 @@ It can generate random passwords or set user-supplied passwords.
 
 %build
 %qmake5
-make
+make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}

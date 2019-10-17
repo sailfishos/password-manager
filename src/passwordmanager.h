@@ -1,7 +1,7 @@
 /**
  * Nemo Password Manager: D-Bus Service for changing and generating passwords
- * Copyright (C) 2013 Jolla Ltd.
- * Contact: Thomas Perl <thomas.perl@jollamobile.com>
+ * Copyright (c) 2013 - 2019 Jolla Ltd.
+ * Copyright (c) 2019 Open Mobile Platform LLC.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,8 +26,10 @@
 #include <QString>
 #include <QTimer>
 #include <QDBusContext>
+#include <QQueue>
 
 #include "passwordmanager_store.h"
+#include "passwordmanager_sshd.h"
 
 class PasswordManager : public QObject, protected QDBusContext {
     Q_OBJECT
@@ -40,12 +42,22 @@ class PasswordManager : public QObject, protected QDBusContext {
         void generatePassword();
         QString getGeneratedPassword();
         void setPassword(const QString &password);
+        // Password login
         bool isLoginEnabled();
+        // Remote login
+        void setRemoteLoginEnabled(bool enabled);
+        bool isRemoteLoginEnabled();
         void quit();
+
+    private slots:
+        void handleRemoteLoginEnabledChanged(bool enabled);
 
     signals:
         void passwordChanged();
+        // Password login
         void loginEnabledChanged(bool enabled);
+        // Remote login
+        void remoteLoginEnabledChanged(bool enabled);
         void error(const QString &message);
 
     private:
@@ -57,7 +69,9 @@ class PasswordManager : public QObject, protected QDBusContext {
 
     private:
         PasswordManagerStore store;
+        PasswordManagerSshd sshdManager;
         QTimer autoclose;
+        QQueue<QDBusMessage> replyQueue;
 };
 
 #endif /* ORG_NEMO_PASSWORDMANAGER_H */

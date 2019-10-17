@@ -1,7 +1,7 @@
 /**
  * Nemo Password Manager: D-Bus Service for changing and generating passwords
- * Copyright (C) 2013 Jolla Ltd.
- * Contact: Thomas Perl <thomas.perl@jollamobile.com>
+ * Copyright (c) 2013 - 2019 Jolla Ltd.
+ * Copyright (c) 2019 Open Mobile Platform LLC.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@
 #include "passwordmanager_store.h"
 
 #include <QFile>
-#include <QtDebug>
 
 #define PASSWORDMANAGER_STATEFILE "/etc/nemo-password-manager.conf"
 #define PASSWORDMANAGER_STATEFILE_TMP PASSWORDMANAGER_STATEFILE ".tmp"
@@ -47,17 +46,12 @@ PasswordManagerStore::get()
 bool
 PasswordManagerStore::set(const QString &password)
 {
-    // Allow remote logins by starting sshd
-    if (system("/bin/systemctl start sshd.socket") != 0) {
-        qWarning() << "Could not start sshd.socket";
-    }
-
     this->password = password;
     return save();
 }
 
 bool
-PasswordManagerStore::isLoginEnabled()
+PasswordManagerStore::isPasswordEnabled()
 {
     // Password is enabled if the state file exists
     QFile file(PASSWORDMANAGER_STATEFILE);
@@ -65,18 +59,14 @@ PasswordManagerStore::isLoginEnabled()
 }
 
 void
-PasswordManagerStore::disableLogin()
+PasswordManagerStore::disablePassword()
 {
     // Remove password file to disable login
     QFile file(PASSWORDMANAGER_STATEFILE);
     if (file.exists()) {
         file.remove();
     }
-
-    // Prevent remote logins by stopping sshd
-    if (system("/bin/systemctl stop sshd.socket") != 0) {
-        qWarning() << "Could not stop sshd.socket";
-    }
+    password = "";
 }
 
 bool

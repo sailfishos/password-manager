@@ -1,0 +1,7 @@
+Makefile
+documentation.list
+*.o
+moc_*
+/src/passwordmanageradaptor.*
+/src/nemo-password-manager
+/RPMS/

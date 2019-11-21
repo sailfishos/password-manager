@@ -16,6 +16,7 @@ BuildRequires: pkgconfig(Qt5DBus)
 BuildRequires: pkgconfig(libshadowutils)
 BuildRequires: pam-devel
 Requires: dbus
+Requires: sailfish-setup >= 0.1.3
 Requires(post):  dbus
 Requires(preun): dbus
 Requires(post):  procps

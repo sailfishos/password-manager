@@ -6,7 +6,6 @@ Summary: D-Bus Service for changing and generating passwords
 %define dbus_service_name org.nemo.passwordmanager
 %define dbus_service_path /org/nemo/passwordmanager
 
-Group: System Environment/Daemon
 License: GPLv2+
 URL: https://git.merproject.org/mer-core/password-manager
 Source: %{name}-%{version}.tar.gz
@@ -32,7 +31,7 @@ It can generate random passwords or set user-supplied passwords.
 
 %build
 %qmake5
-make %{?_smp_mflags}
+%make_build
 
 %install
 rm -rf %{buildroot}
@@ -63,6 +62,6 @@ fi
 %defattr(-,root,root,-)
 %license COPYING
 %{_bindir}/%{name}
-/lib/systemd/system/*.service
+%{_unitdir}/*.service
 %{_datadir}/dbus-1/system-services/%{dbus_service_name}.service
 %{_sysconfdir}/dbus-1/system.d/%{dbus_service_name}.conf

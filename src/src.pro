@@ -44,7 +44,7 @@ DBUS_SERVICE_NAME=org.nemo.passwordmanager
 
 # Installation
 systemd.files = ../systemd/dbus-$${DBUS_SERVICE_NAME}.service
-systemd.path = /lib/systemd/system/
+systemd.path = /usr/lib/systemd/system/
 
 service.files = ../dbus/$${DBUS_SERVICE_NAME}.service
 service.path = /usr/share/dbus-1/system-services/

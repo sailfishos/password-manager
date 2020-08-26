@@ -4,7 +4,7 @@ Release: 1
 Summary: D-Bus Service for changing and generating passwords
 
 %define dbus_service_name org.nemo.passwordmanager
-%define dbus_service_path /org/nemo/passwordmanager
+%define systemd_service_name dbus-org.nemo.passwordmanager.service
 
 License: GPLv2+
 URL: https://git.merproject.org/mer-core/password-manager
@@ -14,12 +14,13 @@ BuildRequires: pkgconfig(Qt5Core)
 BuildRequires: pkgconfig(Qt5DBus)
 BuildRequires: pkgconfig(libshadowutils)
 BuildRequires: pam-devel
+BuildRequires: systemd
 Requires: dbus
 Requires: sailfish-setup >= 0.1.3
+Requires: systemd
 Requires(post):  dbus
-Requires(preun): dbus
-Requires(post):  procps
-Requires(preun): procps
+Requires(postun): dbus
+%systemd_requires
 
 %description
 Password Manager manages user account passwords for developer mode.
@@ -40,23 +41,14 @@ rm -rf %{buildroot}
 %clean
 rm -rf %{buildroot}
 
-
 %post
-# Ask running daemon to quit
-if pgrep -u root -f %{name} >/dev/null; then
-    dbus-send --system --dest=%{dbus_service_name} \
-        --print-reply %{dbus_service_path} \
-        %{dbus_service_name}.quit >/dev/null 2>&1 || true
-fi
+%systemd_post %{systemd_service_name}
 
 %preun
-# Ask running daemon to quit
-if pgrep -u root -f %{name} >/dev/null; then
-    dbus-send --system --dest=%{dbus_service_name} \
-        --print-reply %{dbus_service_path} \
-        %{dbus_service_name}.quit >/dev/null 2>&1 || true
-fi
+%systemd_preun %{systemd_service_name}
 
+%postun
+%systemd_postun_with_restart %{systemd_service_name}
 
 %files
 %defattr(-,root,root,-)

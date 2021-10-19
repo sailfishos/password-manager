@@ -13,8 +13,8 @@ Source: %{name}-%{version}.tar.gz
 BuildRequires: pkgconfig(Qt5Core)
 BuildRequires: pkgconfig(Qt5DBus)
 BuildRequires: pkgconfig(libshadowutils)
+BuildRequires: pkgconfig(systemd)
 BuildRequires: pam-devel
-BuildRequires: systemd
 Requires: dbus
 Requires: sailfish-setup >= 0.1.3
 Requires: systemd

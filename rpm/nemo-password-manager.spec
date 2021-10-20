@@ -1,5 +1,5 @@
 Name: nemo-password-manager
-Version: 0.1.0
+Version: 0.1.5
 Release: 1
 Summary: D-Bus Service for changing and generating passwords
 
@@ -7,7 +7,7 @@ Summary: D-Bus Service for changing and generating passwords
 %define systemd_service_name dbus-org.nemo.passwordmanager.service
 
 License: GPLv2+
-URL: https://git.merproject.org/mer-core/password-manager
+URL: https://github.com/sailfishos/password-manager
 Source: %{name}-%{version}.tar.gz
 
 BuildRequires: pkgconfig(Qt5Core)
@@ -35,11 +35,8 @@ It can generate random passwords or set user-supplied passwords.
 %make_build
 
 %install
-rm -rf %{buildroot}
 %qmake5_install
 
-%clean
-rm -rf %{buildroot}
 
 %post
 %systemd_post %{systemd_service_name}
